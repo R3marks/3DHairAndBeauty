@@ -89,6 +89,17 @@ function Dolly() {
       camera.position.z = -((scroll.offset - 0.25) * 800) + 400;
       camera.position.x = -((scroll.offset - 0.31) * 400) - 0;
       console.log("x should be: " + camera.position.x)
+      const start = {
+        x: 0,
+        y: 0,
+        z: 0
+      }
+      const end = {
+        x: ((scroll.offset - 0.31)/0.07) * -37.5,
+        y: 20,
+        z: 205
+      }
+      camera.lookAt(end.x, end.y, end.z)
     } else {
       camera.lookAt(0, 0, 0)
       console.log("Z: " + camera.position.z)
