@@ -105,7 +105,7 @@ function Dolly() {
       console.log("Z: " + camera.position.z)
       camera.position.z = -((scroll.offset - 0.25) * 800) + 400;
     }
-    console.log(scroll.offset);
+    // console.log(scroll.offset);
   })
   return null;
 }
@@ -185,10 +185,23 @@ function Text3d(props) {
 }
 
 function Poster(props) {
+
+  const [highlight, setHighlight] = useState(false)
+
+  return (
+    <mesh onPointerOver={() => { setHighlight(true) }} onPointerOut={() => { setHighlight(false) }} position={props.position} >
+      <boxGeometry args={props.size} />
+      <meshStandardMaterial color={highlight ? "lightblue" : "white"} />
+    </mesh>
+  )
+}
+
+function PosterHighlighted(props) {
+  console.log("HEY")
   return (
     <mesh position={props.position} >
       <boxGeometry args={props.size} />
-      <meshStandardMaterial color="white" />
+      <meshStandardMaterial color="lightblue" />
     </mesh>
   )
 }
