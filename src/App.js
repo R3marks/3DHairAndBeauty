@@ -1,5 +1,6 @@
 import './stylesheets/App.css';
 import { Canvas, useFrame, extend, useThree, useLoader } from '@react-three/fiber'
+import { useSpring, animated } from 'react-spring'
 import React, { useState, useEffect, useRef } from "react";
 import state from "./store";
 import { Sky, useGLTF, useScroll, ScrollControls, Environment, Merged, Text, MeshReflectorMaterial, Html } from '@react-three/drei'
@@ -187,9 +188,44 @@ function Text3d(props) {
 function Poster(props) {
 
   const [highlight, setHighlight] = useState(false)
+  const [clicked, setClicked] = useState(false)
+
+  const { camera } = useThree();
+  const springProps = useSpring({
+    config: { duration: 2000, }, //easing: easings.easeCubic },
+    from: {
+      x: - 0.1,
+      y: - 0.1,
+      z: - 0.1,
+      lookAtX: camera.lookAt.x - 0.1,
+      lookAtY: camera.lookAt.y - 0.1,
+      lookAtZ: camera.lookAt.z - 0.1,
+    },
+    to: {
+      x: 0,
+      y: 0,
+      z: 250,
+      lookAtX: 0,
+      lookAtY: 100,
+      lookAtZ: 0
+    }
+  });
+  useFrame((state, delta) => {
+    if (clicked) {
+      console.log("HMMMM")
+      camera.position.x = springProps.x.animation.values[0]._value;
+      camera.position.y = springProps.y.animation.values[0]._value;
+      camera.position.z = springProps.z.animation.values[0]._value;
+      camera.lookAt(
+        springProps.lookAtX.animation.values[0]._value,
+        springProps.lookAtY.animation.values[0]._value,
+        springProps.lookAtZ.animation.values[0]._value
+      )
+    }
+  });
 
   return (
-    <mesh onPointerOver={() => { setHighlight(true) }} onPointerOut={() => { setHighlight(false) }} position={props.position} >
+    <mesh position={props.position} onClick={() => setClicked(!clicked)} onPointerOver={() => { setHighlight(true) } } onPointerOut={() => { setHighlight(false) }} >
       <boxGeometry args={props.size} />
       <meshStandardMaterial color={highlight ? "lightblue" : "white"} />
     </mesh>
