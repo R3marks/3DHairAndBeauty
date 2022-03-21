@@ -14,7 +14,8 @@ extend({ TextGeometry })
 
 function Scene() {
 
-  var disabled = true;
+  // var disabled = true;
+  const [disabled, setDisabled] = useState(true);
 
   return (
     <Canvas dpr={[1, 1.5]} 
@@ -28,28 +29,7 @@ function Scene() {
       <ambientLight intensity={0.75} />
       {/* <perspectiveCamera position={[100, 10, -100]} args={[105, window.innerWidth / window.innerHeight, 0.1, 1000]} zoom={100} /> */}
       <ScrollControls distance={1} >
-        {disabled ? <Dolly /> : <></>}
-        <pointLight position={[0, 0, 0]} />
-        <axesHelper args={[200, 200, 200]} />
-        <gridHelper args={[1000, 1000, 1000]} />
-        <SkyBox />
-        <Window size={[50, 40, 5]} position={[35, 20, 200]} />
-        <Window size={[50, 40, 5]} position={[-35, 20, 200]} />
-        <Wall name="back" position={[0, 25, 0]} size={[120, 50, 5]} />
-        <Wall name="left" position={[65, 25, 100]} size={[10, 50, 205]} />
-        <Wall name="right" position={[-65, 25, 100]} size={[10, 50, 205]} />
-        <Wall name="front" position={[0, 50, 200]} size={[120, 20, 5]} />
-        {/* <textGeometry args={["helooo"]}>
-          HELLO
-        </textGeometry> */}
-        <pointLight position={[0, 30, 210]} />
-        {/* <pointLightHelper /> */}
-        <Poster position={[-35, 20, 205]} size={[30, 30, 1]} />
-        <Text3d position={[-37.5, 20, 205]} text={"Text A"} />
-        <Poster position={[0, 20, 205]} size={[18, 30, 1]} />
-        <Text3d position={[-7.5, 30, 205]} text={"Hello and welcome to \naperture science and \ncomputer enrichment \n \nMonday      9AM - 9PM \nTuesday.......9AM - 9PM"} />
-        <Poster position={[35, 20, 205]} size={[30, 30, 1]} />
-        <Text3d position={[32.5, 20, 205]} text={"Text B"} />
+      <WithinTheScroll disabled={disabled} />
         {/* <Text
           scale={[10, 10, 10]}
           color="black" // default
@@ -66,15 +46,48 @@ function Scene() {
   )
 }
 
-function Dolly() {
+function WithinTheScroll() {
+
+  var disabled = true;
+  const { camera } = useThree(); 
+
+  return (
+    <>
+      {disabled ? <Dolly camera={camera} /> : <></>}
+      <pointLight position={[0, 0, 0]} />
+      <axesHelper args={[200, 200, 200]} />
+      <gridHelper args={[1000, 1000, 1000]} />
+      <SkyBox />
+      <Window size={[50, 40, 5]} position={[35, 20, 200]} />
+      <Window size={[50, 40, 5]} position={[-35, 20, 200]} />
+      <Wall name="back" position={[0, 25, 0]} size={[120, 50, 5]} />
+      <Wall name="left" position={[65, 25, 100]} size={[10, 50, 205]} />
+      <Wall name="right" position={[-65, 25, 100]} size={[10, 50, 205]} />
+      <Wall name="front" position={[0, 50, 200]} size={[120, 20, 5]} />
+      {/* <textGeometry args={["helooo"]}>
+        HELLO
+      </textGeometry> */}
+      <pointLight position={[0, 30, 210]} />
+      {/* <pointLightHelper /> */}
+      <Poster position={[-35, 20, 205]} size={[30, 30, 1]} camera={camera} />
+      <Text3d position={[-37.5, 20, 205]} text={"Text A"} />
+      <Poster position={[0, 20, 205]} size={[18, 30, 1]} camera={camera} />
+      <Text3d position={[-7.5, 30, 205]} text={"Hello and welcome to \naperture science and \ncomputer enrichment \n \nMonday      9AM - 9PM \nTuesday.......9AM - 9PM"} />
+      <Poster position={[35, 20, 205]} size={[30, 30, 1]} camera={camera} />
+      <Text3d position={[32.5, 20, 205]} text={"Text B"} />
+    </>
+  )
+}
+
+function Dolly(props) {
   const x = 1;
   const y = 1;
   const posX = 1;
   const posY = 1;
   const z = 1;
   const scroll = useScroll();
-  const { camera } = useThree();
-  console.log(camera.position)
+  // const { camera } = useThree();
+  console.log(props.camera.position)
   useFrame(() => {
     // camera.updateProjectionMatrix(
     //   void (camera.rotation.x = 0.6 - y),
@@ -84,12 +97,12 @@ function Dolly() {
     //   (camera.rotation.z = 0.33 + z)
     //)
     if (scroll.offset < 0.25) {
-      camera.lookAt(0, 0, 0)
-      camera.position.y = -(scroll.offset * 800) + 225;
+      props.camera.lookAt(0, 0, 0)
+      props.camera.position.y = -(scroll.offset * 800) + 225;
     } else if (scroll.offset > 0.31 && scroll.offset < 0.38) {
-      camera.position.z = -((scroll.offset - 0.25) * 800) + 400;
-      camera.position.x = -((scroll.offset - 0.31) * 400) - 0;
-      console.log("x should be: " + camera.position.x)
+      props.camera.position.z = -((scroll.offset - 0.25) * 800) + 400;
+      props.camera.position.x = -((scroll.offset - 0.31) * 400) - 0;
+      console.log("x should be: " + props.camera.position.x)
       const start = {
         x: 0,
         y: 0,
@@ -100,11 +113,11 @@ function Dolly() {
         y: 20,
         z: 205
       }
-      camera.lookAt(end.x, end.y, end.z)
+      props.camera.lookAt(end.x, end.y, end.z)
     } else {
-      camera.lookAt(0, 0, 0)
-      console.log("Z: " + camera.position.z)
-      camera.position.z = -((scroll.offset - 0.25) * 800) + 400;
+      props.camera.lookAt(0, 0, 0)
+      console.log("Z: " + props.camera.position.z)
+      props.camera.position.z = -((scroll.offset - 0.25) * 800) + 400;
     }
     // console.log(scroll.offset);
   })
@@ -190,16 +203,16 @@ function Poster(props) {
   const [highlight, setHighlight] = useState(false)
   const [clicked, setClicked] = useState(false)
 
-  const { camera } = useThree();
+  // const { camera } = useThree();
   const springProps = useSpring({
-    config: { duration: 2000, }, //easing: easings.easeCubic },
+    config: { duration: 10000 }, // , easing: easings.easeCubic },
     from: {
-      x: - 0.1,
-      y: - 0.1,
-      z: - 0.1,
-      lookAtX: camera.lookAt.x - 0.1,
-      lookAtY: camera.lookAt.y - 0.1,
-      lookAtZ: camera.lookAt.z - 0.1,
+      x: props.camera.position.x,
+      y: props.camera.position.y,
+      z: props.camera.position.z,
+      lookAtX: props.camera.lookAt.x - 0.1,
+      lookAtY: props.camera.lookAt.y - 0.1,
+      lookAtZ: props.camera.lookAt.z - 0.1,
     },
     to: {
       x: 0,
@@ -212,11 +225,11 @@ function Poster(props) {
   });
   useFrame((state, delta) => {
     if (clicked) {
-      console.log("HMMMM")
-      camera.position.x = springProps.x.animation.values[0]._value;
-      camera.position.y = springProps.y.animation.values[0]._value;
-      camera.position.z = springProps.z.animation.values[0]._value;
-      camera.lookAt(
+      console.log(springProps)
+      props.camera.position.x = springProps.x.animation.values[0]._value;
+      props.camera.position.y = springProps.y.animation.values[0]._value;
+      props.camera.position.z = springProps.z.animation.values[0]._value;
+      props.camera.lookAt(
         springProps.lookAtX.animation.values[0]._value,
         springProps.lookAtY.animation.values[0]._value,
         springProps.lookAtZ.animation.values[0]._value
