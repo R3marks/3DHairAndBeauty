@@ -102,7 +102,6 @@ function Dolly(props) {
     } else if (scroll.offset > 0.31 && scroll.offset < 0.38) {
       props.camera.position.z = -((scroll.offset - 0.25) * 800) + 400;
       props.camera.position.x = -((scroll.offset - 0.31) * 400) - 0;
-      console.log("x should be: " + props.camera.position.x)
       const start = {
         x: 0,
         y: 0,
@@ -202,10 +201,13 @@ function Poster(props) {
 
   const [highlight, setHighlight] = useState(false)
   const [clicked, setClicked] = useState(false)
+  const [x, setX] = useState(0)
+  const [y, setY] = useState(0)
+  const [z, setZ] = useState(0)
 
   // const { camera } = useThree();
-  const springProps = useSpring({
-    config: { duration: 10000 }, // , easing: easings.easeCubic },
+  const springProps1 = useSpring({
+    config: { duration: 3000 }, // , easing: easings.easeCubic },
     from: {
       x: props.camera.position.x,
       y: props.camera.position.y,
@@ -223,16 +225,40 @@ function Poster(props) {
       lookAtZ: 0
     }
   });
+  const springProps2 = useSpring({
+    config: { duration: 3000 }, // , easing: easings.easeCubic },
+    from: {
+      x: props.camera.position.x,
+      y: props.camera.position.y,
+      z: props.camera.position.z,
+      lookAtX: props.camera.lookAt.x - 0.1,
+      lookAtY: props.camera.lookAt.y - 0.1,
+      lookAtZ: props.camera.lookAt.z - 0.1,
+    },
+    to: {
+      x: x,
+      y: y,
+      z: z,
+      lookAtX: 0,
+      lookAtY: 100,
+      lookAtZ: 0
+    }
+  });
+
   useFrame((state, delta) => {
     if (clicked) {
-      console.log(springProps)
-      props.camera.position.x = springProps.x.animation.values[0]._value;
-      props.camera.position.y = springProps.y.animation.values[0]._value;
-      props.camera.position.z = springProps.z.animation.values[0]._value;
+      console.log(springProps1)
+      setX(props.camera.position.x)
+      setY(props.camera.position.y)
+      setZ(props.camera.position.z)
+      console.log("Saving: (" + props.camera.position.x + ", " + props.camera.position.y + ", " + props.camera.position.z + ")")
+      props.camera.position.x = springProps1.x.animation.to;
+      props.camera.position.y = springProps1.y.animation.to;
+      props.camera.position.z = springProps1.z.animation.to;
       props.camera.lookAt(
-        springProps.lookAtX.animation.values[0]._value,
-        springProps.lookAtY.animation.values[0]._value,
-        springProps.lookAtZ.animation.values[0]._value
+        springProps1.lookAtX.animation.to,
+        springProps1.lookAtY.animation.to,
+        springProps1.lookAtZ.animation.to
       )
     }
   });
