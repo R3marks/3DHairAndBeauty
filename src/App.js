@@ -206,6 +206,7 @@ function Poster(props) {
   const [z, setZ] = useState(0)
 
   // const { camera } = useThree();
+  console.log("X: " + props.position.x)
   const springProps1 = useSpring({
     config: { duration: 3000 }, // , easing: easings.easeCubic },
     from: {
@@ -217,11 +218,11 @@ function Poster(props) {
       lookAtZ: props.camera.lookAt.z - 0.1,
     },
     to: {
-      x: 0,
-      y: 0,
-      z: 250,
-      lookAtX: 0,
-      lookAtY: 100,
+      x: props.position[0],
+      y: props.position[1],
+      z: props.position[2] + 100,
+      lookAtX: props.position[0],
+      lookAtY: props.position[1],
       lookAtZ: 0
     }
   });
