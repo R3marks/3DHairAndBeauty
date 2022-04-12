@@ -87,7 +87,7 @@ function Dolly(props) {
   const z = 1;
   const scroll = useScroll();
   // const { camera } = useThree();
-  console.log(props.camera.position)
+  // console.log(props.camera.position)
   useFrame(() => {
     // camera.updateProjectionMatrix(
     //   void (camera.rotation.x = 0.6 - y),
@@ -99,23 +99,23 @@ function Dolly(props) {
     if (scroll.offset < 0.25) {
       props.camera.lookAt(0, 0, 0)
       props.camera.position.y = -(scroll.offset * 800) + 225;
-    } else if (scroll.offset > 0.31 && scroll.offset < 0.38) {
-      props.camera.position.z = -((scroll.offset - 0.25) * 800) + 400;
-      props.camera.position.x = -((scroll.offset - 0.31) * 400) - 0;
-      const start = {
-        x: 0,
-        y: 0,
-        z: 0
-      }
-      const end = {
-        x: ((scroll.offset - 0.31)/0.07) * -37.5,
-        y: 20,
-        z: 205
-      }
-      props.camera.lookAt(end.x, end.y, end.z)
+    // } else if (scroll.offset > 0.31 && scroll.offset < 0.38) {
+      // props.camera.position.z = -((scroll.offset - 0.25) * 800) + 400;
+      // props.camera.position.x = -((scroll.offset - 0.31) * 400) - 0;
+      // const start = {
+      //   x: 0,
+      //   y: 0,
+      //   z: 0
+      // }
+      // const end = {
+      //   x: ((scroll.offset - 0.31)/0.07) * -37.5,
+      //   y: 20,
+      //   z: 205
+      // }
+      // props.camera.lookAt(end.x, end.y, end.z)
     } else {
       props.camera.lookAt(0, 0, 0)
-      console.log("Z: " + props.camera.position.z)
+      // console.log("Z: " + props.camera.position.z)
       props.camera.position.z = -((scroll.offset - 0.25) * 800) + 400;
     }
     // console.log(scroll.offset);
@@ -205,10 +205,18 @@ function Poster(props) {
   const [y, setY] = useState(0)
   const [z, setZ] = useState(0)
 
+  if (props.position[0] == -35) {
+    console.log("You cliked on Text A")
+  } else if (props.position[0] == 35) {
+    console.log("You cliked on Text B")
+  } else {
+    console.log("You cliked on the door")
+  }
+
   // const { camera } = useThree();
-  console.log("X: " + props.position.x)
+  // console.log("X: " + props.position.x)
   const springProps1 = useSpring({
-    config: { duration: 3000 }, // , easing: easings.easeCubic },
+    config: { duration: 5000 }, // , easing: easings.easeCubic },
     from: {
       x: props.camera.position.x,
       y: props.camera.position.y,
@@ -248,11 +256,11 @@ function Poster(props) {
 
   useFrame((state, delta) => {
     if (clicked) {
-      console.log(springProps1)
+      // console.log(springProps1)
       setX(props.camera.position.x)
       setY(props.camera.position.y)
       setZ(props.camera.position.z)
-      console.log("Saving: (" + props.camera.position.x + ", " + props.camera.position.y + ", " + props.camera.position.z + ")")
+      // console.log("Saving: (" + props.camera.position.x + ", " + props.camera.position.y + ", " + props.camera.position.z + ")")
       props.camera.position.x = springProps1.x.animation.to;
       props.camera.position.y = springProps1.y.animation.to;
       props.camera.position.z = springProps1.z.animation.to;
@@ -261,6 +269,8 @@ function Poster(props) {
         springProps1.lookAtY.animation.to,
         springProps1.lookAtZ.animation.to
       )
+    } else {
+      props.camera.position.x = springProps1.x.animation.from;
     }
   });
 
