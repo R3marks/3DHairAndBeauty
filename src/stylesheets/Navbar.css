@@ -1,0 +1,114 @@
+.navbar {
+    /* background: linear-gradient(90deg, rgb(28, 27, 27) 0%, rgb(26, 23, 23) 100%); */
+    background: rgba(144, 121, 154, 0.75); 
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+  
+.navbar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    width: 100%;
+}
+
+.navbar-jaden {
+    font-weight: normal;
+    font-size: 48px;
+    display: flex;
+    align-items: flex-start;
+    text-align: left;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    color: #000000;
+}
+
+.navbar-jaden:hover {
+  color: #ffffff;
+}
+  
+.fa-typo3 {
+    margin-left: 0.5rem;
+    font-size: 1.8rem;
+}
+  
+.nav-menu {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    grid-template-rows: auto;
+    grid-gap: 10px;
+    list-style: none;
+    text-align: center;
+    width: 60vw;
+    justify-content: end;
+    align-items: center;
+    margin-right: 2rem;
+}
+  
+.nav-item {
+    height: 40px;
+}
+  
+.nav-links {
+  margin-top: 0px;
+    background-color: #0F2021;
+    border-radius: 5px;
+    color: #E68FB1;
+    display: flex;
+    align-items: center;
+    align-self: center;
+    justify-self: center;
+    align-items: center;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    height: 100%;
+    font-size: 20px;
+}
+  
+.nav-links:hover {
+    /* border-bottom: 4px solid #0F2021; */
+    transform: translateY(-4px);
+    transition: all 0.2s ease-out;
+}
+  
+.fa-bars {
+    color: #fff;
+}
+  
+/* .nav-links-mobile {
+    display: none;
+} */
+
+.nav-links-mobile {
+  display: block;
+  text-align: center;
+  margin: 0rem auto;
+  margin-left: 20px;
+  border-radius: 8px;
+  width: 100%;
+  text-decoration: none;
+  font-size: 1.0rem;
+  background-color: transparent;
+  color: #fff;
+  background: #242424;
+  padding: 7.5px 15px;
+  border: 1px solid #fff;
+  transition: all 0.3s ease-out;
+}
+
+.nav-links-mobile:hover {
+  background: #fff;
+  color: #242424;
+  transition: 250ms;
+}
+  
+.menu-icon {
+    display: none;
+}
