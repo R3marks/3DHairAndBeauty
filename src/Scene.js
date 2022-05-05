@@ -371,7 +371,6 @@ function App() {
 
   return (
     <>
-    <Navbar />
     <Scene />
     {/* <div className="scrollArea" ref={scrollArea} onScroll={onScroll}>
       <div style={{ height: `${state.pages * 100}vh` }} />
