@@ -10,16 +10,23 @@ extend({ OrbitControls });
 
 function Test() {
 
+    const [enableScroll, setEnableScroll] = useState(true)
+
+    function setEnableScrollFun(setter) {
+        console.log("HERERERERER" + setter)
+        setEnableScroll(setter)
+    }
+
     return (
-        <Canvas dpr={[1, 1.5]} shadows camera={{ position: [0, 200, 400], fov: 35 }} gl={{ alpha: false }}>
-            <ScrollControls distance={1} >
-                <WithinTheScroll />
+        <Canvas dpr={[1, 1.5]} shadows camera={{ position: [0, 100, 4000], fov: 35 }} gl={{ alpha: false }}>
+            <ScrollControls enabled={enableScroll} distance={1} >
+                <WithinTheScroll setEnableScroll={setEnableScrollFun} />
             </ScrollControls>
         </Canvas>
     );
 };
 
-function WithinTheScroll() {
+function WithinTheScroll(props) {
 
     const [enabled, setEnabled] = useState(true)
 
@@ -29,7 +36,7 @@ function WithinTheScroll() {
     return (
         <>
             {/* {enabled ? <Dolly camera={camera} /> : <></>} */}
-            <Dolly camera={camera} />
+            <Dolly camera={camera} enabled={enabled} />
             <ambientLight />
             <axesHelper args={[200, 200, 200]} />
             <gridHelper args={[1000, 1000, 1000]} />
@@ -42,7 +49,7 @@ function WithinTheScroll() {
             </mesh>
             <spotLight intensity={0.3} position={[5, 10, 50]} />
             <Box />
-            <SpikyStar position={[20, 0, 0]} camera={camera} setEnabled={setEnabled} />
+            <SpikyStar setEnableScroll={props.setEnableScroll} position={[20, 0, 0]} camera={camera} setEnabled={setEnabled} />
         </>
     )
 }
@@ -51,13 +58,8 @@ function Dolly(props) {
     const scroll = useScroll();
     useFrame(() => {
         if (props.enabled == true) {
-            if (scroll.offset < 0.25) {
-                props.camera.lookAt(0, 0, 0)
-                props.camera.position.y = -(scroll.offset * 800) + 225;
-            } else {
-                props.camera.lookAt(0, 0, 0)
-                props.camera.position.z = -((scroll.offset - 0.25) * 800) + 400;
-            }
+            props.camera.lookAt(0, 0, 0)
+            props.camera.position.z = -(scroll.offset * 800) + 400;
         }
     })
     return null;
@@ -85,6 +87,9 @@ function SpikyStar(props) {
     const [x, setX] = useState(0)
     const [y, setY] = useState(0)
     const [z, setZ] = useState(0)
+    const [scrollOffset, setScrollOffset] = useState(0);
+
+    const scroll = useScroll();
 
     const springProps1 = useSpring({
         config: { duration: 5000 }, // , easing: easings.easeCubic },
@@ -99,7 +104,7 @@ function SpikyStar(props) {
         to: {
             x: props.position[0],
             y: props.position[1],
-            z: props.position[2] + 10,
+            z: props.position[2] + 50,
             lookAtX: props.position[0],
             lookAtY: props.position[1],
             lookAtZ: 0
@@ -125,22 +130,34 @@ function SpikyStar(props) {
     function handleClicked() {
         setClicked(!clicked)
         console.log("Click is: " + !clicked)
+        console.log(scroll.offset)
         if (!clicked) {
+            setX(props.camera.position.x);
+            setY(props.camera.position.y);
+            setZ(props.camera.position.z);
+            setScrollOffset(scroll.offset);
+            props.setEnableScroll(false)
+            disableScroll()
             props.setEnabled(false)
-            setX(props.camera.position.x)
-            setY(props.camera.position.y)
-            setZ(props.camera.position.z)
-            console.log("Current position is x: " + props.camera.position.x + " y: " + props.camera.position.y + " z: " + props.camera.position.z)
+            console.log("Current position is x: " + props.camera.position.x + " y: " + props.camera.position.y + " z: " + props.camera.position.z + " scroll offset: " + scroll.offset)
             console.log("Set position to x: " + springProps1.x.animation.to + " y: " + springProps1.y.animation.to + " z: " + springProps1.z.animation.to);
             props.camera.position.x = springProps1.x.animation.to;
             props.camera.position.y = springProps1.y.animation.to;
             props.camera.position.z = springProps1.z.animation.to;
+            console.log(props.position.x);
+            props.camera.lookAt(props.position[0], props.position[1], props.position[2]);
         } else {
             props.setEnabled(true)
-            console.log("Returning position to x: " + x + " y: " + y + " z: " + z);
+            console.log("Returning position to x: " + x + " y: " + y + " z: " + z + " scroll offest: " + scrollOffset);
             props.camera.position.x = x;
             props.camera.position.y = y;
             props.camera.position.z = z;
+            props.camera.lookAt(0, 0, 0);
+            console.log("scroll offset before: " + scroll.offset)
+            scroll.offset = scrollOffset;
+            props.setEnableScroll(true)
+            enableScroll()
+            console.log("scroll offset after: " + scroll.offset)
         }
     }
 
@@ -150,6 +167,46 @@ function SpikyStar(props) {
             <meshPhongMaterial attach="material" color={highlight ? "yellow" : "hotpink"} />
         </mesh>
     )
+}
+
+// left: 37, up: 38, right: 39, down: 40,
+// spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
+var keys = {37: 1, 38: 1, 39: 1, 40: 1};
+
+function preventDefault(e) {
+  e.preventDefault();
+}
+
+function preventDefaultForScrollKeys(e) {
+  if (keys[e.keyCode]) {
+    preventDefault(e);
+    return false;
+  }
+}
+
+// modern Chrome requires { passive: false } when adding event
+var supportsPassive = false;
+try {
+  window.addEventListener("test", null, Object.defineProperty({}, 'passive', {
+    get: function () { supportsPassive = true; } 
+  }));
+} catch(e) {}
+
+var wheelOpt = supportsPassive ? { passive: false } : false;
+var wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel';
+
+function disableScroll() {
+    window.addEventListener('DOMMouseScroll', preventDefault, false); // older FF
+    window.addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
+    window.addEventListener('touchmove', preventDefault, wheelOpt); // mobile
+    window.addEventListener('keydown', preventDefaultForScrollKeys, false);
+}
+
+function enableScroll() {
+    window.removeEventListener('DOMMouseScroll', preventDefault, false);
+    window.removeEventListener(wheelEvent, preventDefault, wheelOpt); 
+    window.removeEventListener('touchmove', preventDefault, wheelOpt);
+    window.removeEventListener('keydown', preventDefaultForScrollKeys, false);
 }
 
 function Box() {
